@@ -135,9 +135,9 @@ export default function ChatPage() {
     }
   }, [activeChat?.userId]);
 
-  // Fetch AI smart reply suggestions when incoming message changes
+  // Fetch AI smart reply suggestions when incoming message changes (Grower only)
   useEffect(() => {
-    if (messages.length > 0) {
+    if (messages.length > 0 && user?.role === 'grower') {
       const lastMsg = messages[messages.length - 1];
       const isOtherUser = lastMsg.senderId === activeChat?.userId;
       if (isOtherUser) {
@@ -155,7 +155,7 @@ export default function ChatPage() {
     } else {
       setSuggestions([]);
     }
-  }, [messages, activeChat?.userId]);
+  }, [messages, activeChat?.userId, user?.role]);
 
   const handleTranslate = async (msgId, text, targetLang) => {
     try {
@@ -260,11 +260,12 @@ export default function ChatPage() {
                   </div>
                 ) : (
                   messages.map((msg) => {
-                    const isMe = msg.senderId === user.id;
-                    const translatedText = translations[msg._id];
+                    const isMe = msg.senderId === (user?.id || user?._id);
+                    const msgId = msg._id || msg.id;
+                    const translatedText = translations[msgId];
                     return (
                       <div
-                        key={msg._id}
+                        key={msgId}
                         className={`flex ${isMe ? 'justify-end' : 'justify-start'}`}
                       >
                         <div
@@ -292,7 +293,7 @@ export default function ChatPage() {
                               <div className="flex gap-1.5 items-center text-[8px] font-bold text-slate-400 dark:text-slate-500">
                                 <button
                                   type="button"
-                                  onClick={() => handleTranslate(msg._id, msg.text, 'Punjabi')}
+                                  onClick={() => handleTranslate(msgId, msg.text, 'Punjabi')}
                                   className="hover:text-primary-600 dark:hover:text-primary-400"
                                 >
                                   ਪੰਜਾਬੀ
@@ -300,7 +301,7 @@ export default function ChatPage() {
                                 <span>•</span>
                                 <button
                                   type="button"
-                                  onClick={() => handleTranslate(msg._id, msg.text, 'Hindi')}
+                                  onClick={() => handleTranslate(msgId, msg.text, 'Hindi')}
                                   className="hover:text-primary-600 dark:hover:text-primary-400"
                                 >
                                   हिंदी
@@ -308,7 +309,7 @@ export default function ChatPage() {
                                 <span>•</span>
                                 <button
                                   type="button"
-                                  onClick={() => handleTranslate(msg._id, msg.text, 'English')}
+                                  onClick={() => handleTranslate(msgId, msg.text, 'English')}
                                   className="hover:text-primary-600 dark:hover:text-primary-400"
                                 >
                                   EN
