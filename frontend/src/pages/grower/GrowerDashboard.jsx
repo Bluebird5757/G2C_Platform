@@ -24,15 +24,15 @@ const cards = [
 export default function GrowerDashboard() {
   return (
     <div className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
-      <h1 className="text-3xl font-bold">Grower Dashboard</h1>
-      <p className="mt-2 text-gray-600">Manage your profile and product listings.</p>
+      <h1 className="text-3xl font-bold text-slate-900 dark:text-white">Grower Dashboard</h1>
+      <p className="mt-2 text-slate-600 dark:text-slate-400">Manage your profile and product listings.</p>
 
       <div className="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
         {cards.map((card) => (
           <Link key={card.to} to={card.to} className="card group hover:border-primary-300 hover:shadow-md transition">
             <span className="text-4xl">{card.icon}</span>
-            <h2 className="mt-4 text-lg font-semibold group-hover:text-primary-700">{card.title}</h2>
-            <p className="mt-2 text-sm text-gray-600">{card.desc}</p>
+            <h2 className="mt-4 text-lg font-semibold text-slate-900 dark:text-white group-hover:text-primary-700 dark:group-hover:text-primary-400">{card.title}</h2>
+            <p className="mt-2 text-sm text-slate-600 dark:text-slate-400">{card.desc}</p>
           </Link>
         ))}
       </div>
