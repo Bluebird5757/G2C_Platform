@@ -18,6 +18,11 @@ export const profileApi = {
   getPublicGrower: (userId) => api.get(`/growers/public/${userId}`),
 };
 
+export const reviewApi = {
+  add: (growerId, data) => api.post(`/growers/${growerId}/reviews`, data),
+  get: (growerId) => api.get(`/growers/${growerId}/reviews`),
+};
+
 export const listingApi = {
   getMeta: () => api.get('/listings/meta'),
   getCities: () => api.get('/listings/cities'),

@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import toast from 'react-hot-toast';
 import { listingApi, profileApi } from '../../api/services';
 import { getErrorMessage } from '../../utils/constants';
+import ReviewSection from '../../components/ReviewSection';
 
 export default function FindGrowersPage() {
   const [meta, setMeta] = useState({ categories: [], categoryItems: {} });
@@ -105,16 +106,33 @@ export default function FindGrowersPage() {
 
       {selectedGrower && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4" onClick={() => setSelectedGrower(null)}>
-          <div className="card max-w-md w-full" onClick={(e) => e.stopPropagation()}>
-            <img src={selectedGrower.avatarUrl || 'https://via.placeholder.com/120'} alt="" className="mx-auto h-24 w-24 rounded-full object-cover" />
-            <h2 className="mt-4 text-xl font-bold text-center">{selectedGrower.name}</h2>
-            <dl className="mt-4 space-y-2 text-sm">
-              <div><dt className="font-medium">City</dt><dd>{selectedGrower.city}</dd></div>
-              <div><dt className="font-medium">Category</dt><dd>{selectedGrower.category}</dd></div>
-              <div><dt className="font-medium">Phone</dt><dd>{selectedGrower.phone || '—'}</dd></div>
-              <div><dt className="font-medium">Address</dt><dd>{selectedGrower.address || '—'}</dd></div>
+          <div className="card max-w-md w-full max-h-[90vh] overflow-y-auto" onClick={(e) => e.stopPropagation()}>
+            <img src={selectedGrower.avatarUrl || 'https://via.placeholder.com/120'} alt="" className="mx-auto h-24 w-24 rounded-full object-cover border" />
+            <h2 className="mt-4 text-xl font-bold text-center text-slate-800">{selectedGrower.name}</h2>
+            
+            {/* Rating Badge */}
+            {selectedGrower.averageRating > 0 ? (
+              <div className="flex items-center justify-center gap-1.5 mt-1.5 text-sm">
+                <span className="text-amber-500 font-bold">★ {selectedGrower.averageRating.toFixed(1)}</span>
+                <span className="text-slate-400">({selectedGrower.totalReviews} reviews)</span>
+              </div>
+            ) : (
+              <p className="text-center text-xs text-slate-400 mt-1">No reviews yet</p>
+            )}
+
+            <dl className="mt-4 bg-slate-50/50 p-3 rounded-lg border border-slate-100 space-y-2 text-sm">
+              <div className="flex justify-between border-b border-slate-100/50 pb-1.5"><dt className="font-semibold text-slate-500">City</dt><dd className="text-slate-800 font-medium">{selectedGrower.city}</dd></div>
+              <div className="flex justify-between border-b border-slate-100/50 pb-1.5"><dt className="font-semibold text-slate-500">Category</dt><dd className="text-slate-800 font-medium">{selectedGrower.category}</dd></div>
+              <div className="flex justify-between border-b border-slate-100/50 pb-1.5"><dt className="font-semibold text-slate-500">Phone</dt><dd className="text-slate-800 font-medium">{selectedGrower.phone || '—'}</dd></div>
+              <div className="flex justify-between pb-0.5"><dt className="font-semibold text-slate-500">Address</dt><dd className="text-slate-800 font-medium text-right max-w-[200px] truncate">{selectedGrower.address || '—'}</dd></div>
             </dl>
-            <button type="button" onClick={() => setSelectedGrower(null)} className="btn-secondary mt-6 w-full">Close</button>
+
+            <ReviewSection 
+              growerId={selectedGrower.userId._id || selectedGrower.userId} 
+              onReviewSubmit={() => viewGrower(selectedGrower.userId._id || selectedGrower.userId)} 
+            />
+
+            <button type="button" onClick={() => setSelectedGrower(null)} className="btn-secondary mt-6 w-full py-2.5 font-semibold text-slate-700">Close</button>
           </div>
         </div>
       )}
