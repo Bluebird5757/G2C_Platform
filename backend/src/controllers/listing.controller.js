@@ -42,3 +42,8 @@ export const getMeta = asyncHandler(async (req, res) => {
     categoryItems: CATEGORY_ITEMS,
   });
 });
+
+export const getPriceTrends = asyncHandler(async (req, res) => {
+  const trends = await listingService.getPriceTrends();
+  sendSuccess(res, { trends });
+});

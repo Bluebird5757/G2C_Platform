@@ -18,6 +18,7 @@ import ConsumerProfilePage from './pages/consumer/ConsumerProfilePage';
 import FindGrowersPage from './pages/consumer/FindGrowersPage';
 import ConsumerOrdersPage from './pages/consumer/ConsumerOrdersPage';
 import ChatPage from './pages/chat/ChatPage';
+import PriceTrendsPage from './pages/consumer/PriceTrendsPage';
 import { ROLES } from './utils/constants';
 
 export default function App() {
@@ -52,6 +53,7 @@ export default function App() {
 
               <Route element={<ProtectedRoute roles={[ROLES.GROWER, ROLES.CONSUMER]} />}>
                 <Route path="chat" element={<ChatPage />} />
+                <Route path="price-trends" element={<PriceTrendsPage />} />
               </Route>
 
               <Route path="*" element={<NotFoundPage />} />

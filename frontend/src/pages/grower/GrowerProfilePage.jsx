@@ -13,6 +13,8 @@ export default function GrowerProfilePage() {
     address: '',
     category: 'Vegetables',
     aadharLast4: '',
+    latitude: 0,
+    longitude: 0,
   });
   const [avatarUrl, setAvatarUrl] = useState('');
   const [loading, setLoading] = useState(true);
@@ -30,6 +32,8 @@ export default function GrowerProfilePage() {
           address: p.address || '',
           category: p.category || 'Vegetables',
           aadharLast4: p.aadharLast4 || '',
+          latitude: p.latitude || 0,
+          longitude: p.longitude || 0,
         });
         setAvatarUrl(p.avatarUrl || '');
       })
@@ -38,6 +42,26 @@ export default function GrowerProfilePage() {
   }, []);
 
   const handleChange = (e) => setForm({ ...form, [e.target.name]: e.target.value });
+
+  const handleGetLocation = () => {
+    if (!navigator.geolocation) {
+      toast.error('Geolocation is not supported by your browser');
+      return;
+    }
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        setForm((prev) => ({
+          ...prev,
+          latitude: position.coords.latitude,
+          longitude: position.coords.longitude,
+        }));
+        toast.success('Location detected successfully');
+      },
+      (error) => {
+        toast.error(`Error getting location: ${error.message}`);
+      }
+    );
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -91,6 +115,39 @@ export default function GrowerProfilePage() {
             <input name={field} required={field === 'name' || field === 'city'} className="input-field" value={form[field]} onChange={handleChange} />
           </div>
         ))}
+
+        <div className="grid grid-cols-2 gap-4">
+          <div>
+            <label className="block text-sm font-medium mb-1">Latitude</label>
+            <input
+              name="latitude"
+              type="number"
+              step="any"
+              className="input-field bg-gray-50"
+              value={form.latitude}
+              onChange={(e) => setForm({ ...form, latitude: Number(e.target.value) || 0 })}
+            />
+          </div>
+          <div>
+            <label className="block text-sm font-medium mb-1">Longitude</label>
+            <input
+              name="longitude"
+              type="number"
+              step="any"
+              className="input-field bg-gray-50"
+              value={form.longitude}
+              onChange={(e) => setForm({ ...form, longitude: Number(e.target.value) || 0 })}
+            />
+          </div>
+        </div>
+
+        <button
+          type="button"
+          onClick={handleGetLocation}
+          className="btn-secondary w-full"
+        >
+          Detect My Location
+        </button>
 
         <div>
           <label className="block text-sm font-medium mb-1">Primary category</label>

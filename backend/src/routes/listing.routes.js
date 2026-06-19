@@ -9,6 +9,7 @@ const router = Router();
 
 router.get('/meta', listingController.getMeta);
 router.get('/cities', listingController.getCities);
+router.get('/price-trends', listingController.getPriceTrends);
 router.post('/search', searchValidator, validate, listingController.searchGrowers);
 
 router.post(

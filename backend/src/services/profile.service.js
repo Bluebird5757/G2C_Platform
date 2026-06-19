@@ -18,6 +18,8 @@ export const updateGrowerProfile = async (userId, data) => {
     phone: data.phone || '',
     address: data.address || '',
     aadharLast4: data.aadharLast4 || '',
+    latitude: data.latitude !== undefined ? Number(data.latitude) : 0,
+    longitude: data.longitude !== undefined ? Number(data.longitude) : 0,
     isProfileComplete: true,
   };
 

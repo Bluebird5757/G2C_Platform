@@ -1,11 +1,36 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import toast from 'react-hot-toast';
+import { MapContainer, TileLayer, Marker, Popup, useMap } from 'react-leaflet';
+import L from 'leaflet';
+import 'leaflet/dist/leaflet.css';
 import { listingApi, profileApi } from '../../api/services';
 import { getErrorMessage } from '../../utils/constants';
 import ReviewSection from '../../components/ReviewSection';
 import { useCart } from '../../context/CartContext';
 import { useAuth } from '../../context/AuthContext';
+
+// Fix Leaflet marker icon issue
+delete L.Icon.Default.prototype._getIconUrl;
+L.Icon.Default.mergeOptions({
+  iconRetinaUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon-2x.png',
+  iconUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon.png',
+  shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-shadow.png',
+});
+
+const CITY_COORDINATES = {
+  amritsar: [31.6340, 74.8723],
+  bathinda: [30.2110, 74.9455],
+  ludhiana: [30.9010, 75.8573],
+};
+
+function MapController({ center }) {
+  const map = useMap();
+  useEffect(() => {
+    map.setView(center, 12);
+  }, [center, map]);
+  return null;
+}
 
 export default function FindGrowersPage() {
   const navigate = useNavigate();
@@ -99,22 +124,102 @@ export default function FindGrowersPage() {
         </div>
       </form>
 
-      <div className="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-        {results.map((listing) => (
-          <div key={listing._id} className="card">
-            <p className="font-semibold text-primary-700">{listing.category}</p>
-            <p className="text-sm text-gray-500 mt-1">City: {listing.city}</p>
-            <p className="text-sm mt-2">Items: {listing.items.join(', ')}</p>
-            <button
-              type="button"
-              onClick={() => viewGrower(listing.growerId._id || listing.growerId)}
-              className="btn-primary mt-4 w-full text-sm py-2"
+      {results.length > 0 && (
+        <div className="mt-10 grid grid-cols-1 lg:grid-cols-3 gap-8">
+          {/* Map Container */}
+          <div className="lg:col-span-2 h-[500px] w-full rounded-2xl overflow-hidden border border-slate-200 shadow-md relative z-0">
+            <MapContainer
+              center={CITY_COORDINATES[filters.city.toLowerCase()] || [31.1471, 75.3412]}
+              zoom={12}
+              style={{ height: '100%', width: '100%' }}
             >
-              View grower details
-            </button>
+              <TileLayer
+                attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+                url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+              />
+              <MapController
+                center={CITY_COORDINATES[filters.city.toLowerCase()] || [31.1471, 75.3412]}
+              />
+              {results
+                .filter(
+                  (r) =>
+                    r.growerProfile &&
+                    r.growerProfile.latitude &&
+                    r.growerProfile.longitude
+                )
+                .map((listing) => (
+                  <Marker
+                    key={listing._id}
+                    position={[
+                      listing.growerProfile.latitude,
+                      listing.growerProfile.longitude,
+                    ]}
+                  >
+                    <Popup>
+                      <div className="text-center p-1">
+                        <h4 className="font-bold text-slate-800 text-sm">
+                          {listing.growerProfile.name || 'Organic Grower'}
+                        </h4>
+                        <p className="text-xs text-primary-600 font-semibold mt-0.5">
+                          {listing.category}
+                        </p>
+                        <p className="text-[11px] text-slate-500 mt-1 font-medium">
+                          Items: {listing.items.slice(0, 3).join(', ')}
+                          {listing.items.length > 3 ? '...' : ''}
+                        </p>
+                        <button
+                          type="button"
+                          onClick={() =>
+                            viewGrower(listing.growerId._id || listing.growerId)
+                          }
+                          className="mt-2 text-xs bg-primary-600 text-white px-3 py-1 rounded hover:bg-primary-700 transition-colors font-medium"
+                        >
+                          View Details
+                        </button>
+                      </div>
+                    </Popup>
+                  </Marker>
+                ))}
+            </MapContainer>
           </div>
-        ))}
-      </div>
+
+          {/* Listings List */}
+          <div className="h-[500px] overflow-y-auto pr-2 space-y-4">
+            {results.map((listing) => (
+              <div key={listing._id} className="card hover:shadow-lg transition-shadow duration-300">
+                <p className="font-semibold text-primary-700 text-lg">
+                  {listing.growerProfile?.name || 'Organic Grower'}
+                </p>
+                <div className="flex justify-between items-center mt-1">
+                  <span className="text-xs font-semibold bg-primary-50 text-primary-700 px-2 py-0.5 rounded">
+                    {listing.category}
+                  </span>
+                  <span className="text-xs text-gray-500">City: {listing.city}</span>
+                </div>
+                <p className="text-sm text-slate-600 mt-3 font-medium">
+                  Items: <span className="text-slate-800 font-normal">{listing.items.join(', ')}</span>
+                </p>
+                {listing.growerProfile?.latitude && listing.growerProfile?.longitude ? (
+                  <p className="text-xs text-emerald-600 flex items-center gap-1 mt-2">
+                    📍 Map location available
+                  </p>
+                ) : (
+                  <p className="text-xs text-slate-400 flex items-center gap-1 mt-2">
+                    📍 No coordinates saved
+                  </p>
+                )}
+                <button
+                  type="button"
+                  onClick={() => viewGrower(listing.growerId._id || listing.growerId)}
+                  className="btn-primary mt-4 w-full text-sm py-2 font-bold"
+                >
+                  View grower details
+                </button>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
 
       {selectedGrower && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4" onClick={() => setSelectedGrower(null)}>

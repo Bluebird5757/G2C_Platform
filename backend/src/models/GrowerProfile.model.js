@@ -19,6 +19,8 @@ const growerProfileSchema = new mongoose.Schema(
       default: CATEGORIES.VEGETABLES,
     },
     aadharLast4: { type: String, trim: true, default: '' },
+    latitude: { type: Number, default: 0 },
+    longitude: { type: Number, default: 0 },
     avatar: { type: String, default: 'default-avatar.jpg' },
     isProfileComplete: { type: Boolean, default: false },
   },

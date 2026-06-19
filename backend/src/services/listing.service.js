@@ -1,5 +1,6 @@
 import Listing from '../models/Listing.model.js';
 import GrowerProfile from '../models/GrowerProfile.model.js';
+import Order from '../models/Order.model.js';
 import { ApiError } from '../utils/apiResponse.js';
 import { CATEGORIES } from '../config/constants.js';
 
@@ -61,7 +62,7 @@ export const getDistinctCities = async () => {
 };
 
 export const searchGrowers = async ({ category, item, city }) => {
-  return Listing.find({
+  const listings = await Listing.find({
     isActive: true,
     category,
     city,
@@ -70,8 +71,70 @@ export const searchGrowers = async ({ category, item, city }) => {
     path: 'growerId',
     select: 'email',
   });
+
+  const growerIds = listings.map((l) => l.growerId._id || l.growerId);
+  const profiles = await GrowerProfile.find({ userId: { $in: growerIds } });
+
+  return listings.map((l) => {
+    const profile = profiles.find(
+      (p) => p.userId.toString() === (l.growerId._id || l.growerId).toString()
+    );
+    const obj = l.toObject();
+    obj.growerProfile = profile
+      ? {
+          name: profile.name,
+          city: profile.city,
+          latitude: profile.latitude,
+          longitude: profile.longitude,
+          avatar: profile.avatar,
+          isProfileComplete: profile.isProfileComplete,
+        }
+      : null;
+    return obj;
+  });
 };
 
 export const getCategoriesMeta = () => {
   return { categories: Object.values(CATEGORIES) };
+};
+
+export const getPriceTrends = async () => {
+  return Order.aggregate([
+    {
+      $unwind: '$items',
+    },
+    {
+      $lookup: {
+        from: 'growerprofiles',
+        localField: 'growerId',
+        foreignField: 'userId',
+        as: 'profile',
+      },
+    },
+    {
+      $unwind: '$profile',
+    },
+    {
+      $group: {
+        _id: {
+          item: '$items.name',
+          city: '$profile.city',
+          date: { $dateToString: { format: '%Y-%m-%d', date: '$createdAt' } },
+        },
+        avgPrice: { $avg: '$items.price' },
+      },
+    },
+    {
+      $project: {
+        _id: 0,
+        item: '$_id.item',
+        city: '$_id.city',
+        date: '$_id.date',
+        avgPrice: { $round: ['$avgPrice', 2] },
+      },
+    },
+    {
+      $sort: { date: 1 },
+    },
+  ]);
 };

@@ -61,6 +61,11 @@ export default function MainLayout() {
                 Messages
               </NavLink>
             )}
+            {isAuthenticated && (
+              <NavLink to="/price-trends" className={({ isActive }) => isActive ? 'text-primary-600 font-bold' : 'hover:text-slate-950 transition-colors'}>
+                Price Trends
+              </NavLink>
+            )}
           </nav>
 
           <div className="flex items-center gap-4">

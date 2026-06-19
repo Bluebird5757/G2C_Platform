@@ -38,6 +38,7 @@ export const chatApi = {
 export const listingApi = {
   getMeta: () => api.get('/listings/meta'),
   getCities: () => api.get('/listings/cities'),
+  getPriceTrends: () => api.get('/listings/price-trends'),
   search: (data) => api.post('/listings/search', data),
   create: (data) => api.post('/listings', data),
   getMine: () => api.get('/listings/mine'),
