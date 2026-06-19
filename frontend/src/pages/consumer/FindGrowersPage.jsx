@@ -1,11 +1,15 @@
 import { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import toast from 'react-hot-toast';
 import { listingApi, profileApi } from '../../api/services';
 import { getErrorMessage } from '../../utils/constants';
 import ReviewSection from '../../components/ReviewSection';
 import { useCart } from '../../context/CartContext';
+import { useAuth } from '../../context/AuthContext';
 
 export default function FindGrowersPage() {
+  const navigate = useNavigate();
+  const { user } = useAuth();
   const { addToCart } = useCart();
   const [meta, setMeta] = useState({ categories: [], categoryItems: {} });
   const [cities, setCities] = useState([]);
@@ -129,11 +133,30 @@ export default function FindGrowersPage() {
             )}
 
             <dl className="mt-4 bg-slate-50/50 p-3 rounded-lg border border-slate-100 space-y-2 text-sm">
-              <div className="flex justify-between border-b border-slate-100/50 pb-1.5"><dt className="font-semibold text-slate-500">City</dt><dd className="text-slate-800 font-medium">{selectedGrower.city}</dd></div>
-              <div className="flex justify-between border-b border-slate-100/50 pb-1.5"><dt className="font-semibold text-slate-500">Category</dt><dd className="text-slate-800 font-medium">{selectedGrower.category}</dd></div>
-              <div className="flex justify-between border-b border-slate-100/50 pb-1.5"><dt className="font-semibold text-slate-500">Phone</dt><dd className="text-slate-800 font-medium">{selectedGrower.phone || '—'}</dd></div>
-              <div className="flex justify-between pb-0.5"><dt className="font-semibold text-slate-500">Address</dt><dd className="text-slate-800 font-medium text-right max-w-[200px] truncate">{selectedGrower.address || '—'}</dd></div>
+                <div className="flex justify-between border-b border-slate-100/50 pb-1.5"><dt className="font-semibold text-slate-500">City</dt><dd className="text-slate-800 font-medium">{selectedGrower.city}</dd></div>
+                <div className="flex justify-between border-b border-slate-100/50 pb-1.5"><dt className="font-semibold text-slate-500">Category</dt><dd className="text-slate-800 font-medium">{selectedGrower.category}</dd></div>
+                <div className="flex justify-between border-b border-slate-100/50 pb-1.5"><dt className="font-semibold text-slate-500">Phone</dt><dd className="text-slate-800 font-medium">{selectedGrower.phone || '—'}</dd></div>
+                <div className="flex justify-between pb-0.5"><dt className="font-semibold text-slate-500">Address</dt><dd className="text-slate-800 font-medium text-right max-w-[200px] truncate">{selectedGrower.address || '—'}</dd></div>
             </dl>
+
+            {user && user.role === 'consumer' && (
+              <button
+                type="button"
+                onClick={() =>
+                  navigate('/chat', {
+                    state: {
+                      startChatWith: {
+                        userId: selectedGrower.userId._id || selectedGrower.userId,
+                        name: selectedGrower.name,
+                      },
+                    },
+                  })
+                }
+                className="btn-primary mt-3 w-full bg-indigo-600 border-indigo-600 hover:bg-indigo-700 text-xs py-2.5 font-bold shadow-md shadow-indigo-100"
+              >
+                Message Grower 💬
+              </button>
+            )}
 
             {/* Available Products Section */}
             {selectedGrower.items && selectedGrower.items.length > 0 && (

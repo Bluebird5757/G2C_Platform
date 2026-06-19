@@ -30,6 +30,11 @@ export const orderApi = {
   updateStatus: (orderId, status) => api.patch(`/orders/${orderId}/status`, { status }),
 };
 
+export const chatApi = {
+  getConversations: () => api.get('/chat/conversations'),
+  getHistory: (otherUserId) => api.get(`/chat/history/${otherUserId}`),
+};
+
 export const listingApi = {
   getMeta: () => api.get('/listings/meta'),
   getCities: () => api.get('/listings/cities'),

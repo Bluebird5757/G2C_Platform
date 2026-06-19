@@ -4,6 +4,7 @@ import profileRoutes from './profile.routes.js';
 import listingRoutes from './listing.routes.js';
 import reviewRoutes from './review.routes.js';
 import orderRoutes from './order.routes.js';
+import messageRoutes from './message.routes.js';
 
 const router = Router();
 
@@ -16,5 +17,6 @@ router.use('/', profileRoutes);
 router.use('/listings', listingRoutes);
 router.use('/', reviewRoutes);
 router.use('/orders', orderRoutes);
+router.use('/chat', messageRoutes);
 
 export default router;

@@ -17,6 +17,7 @@ import ConsumerDashboard from './pages/consumer/ConsumerDashboard';
 import ConsumerProfilePage from './pages/consumer/ConsumerProfilePage';
 import FindGrowersPage from './pages/consumer/FindGrowersPage';
 import ConsumerOrdersPage from './pages/consumer/ConsumerOrdersPage';
+import ChatPage from './pages/chat/ChatPage';
 import { ROLES } from './utils/constants';
 
 export default function App() {
@@ -47,6 +48,10 @@ export default function App() {
                 <Route path="consumer/profile" element={<ConsumerProfilePage />} />
                 <Route path="consumer/search" element={<FindGrowersPage />} />
                 <Route path="consumer/orders" element={<ConsumerOrdersPage />} />
+              </Route>
+
+              <Route element={<ProtectedRoute roles={[ROLES.GROWER, ROLES.CONSUMER]} />}>
+                <Route path="chat" element={<ChatPage />} />
               </Route>
 
               <Route path="*" element={<NotFoundPage />} />

@@ -56,6 +56,11 @@ export default function MainLayout() {
                 My Orders
               </NavLink>
             )}
+            {isAuthenticated && (
+              <NavLink to="/chat" className={({ isActive }) => isActive ? 'text-primary-600 font-bold' : 'hover:text-slate-950 transition-colors'}>
+                Messages
+              </NavLink>
+            )}
           </nav>
 
           <div className="flex items-center gap-4">
