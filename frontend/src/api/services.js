@@ -45,3 +45,9 @@ export const listingApi = {
   delete: (id) => api.delete(`/listings/${id}`),
   removeItem: (id, item) => api.patch(`/listings/${id}/items`, { item }),
 };
+
+export const aiApi = {
+  parseSearch: (query) => api.post('/ai/search-parse', { query }),
+  translate: (text, targetLang) => api.post('/ai/translate', { text, targetLang }),
+  getSuggestions: (messageText) => api.post('/ai/suggestions', { messageText }),
+};

@@ -4,7 +4,7 @@ import toast from 'react-hot-toast';
 import { MapContainer, TileLayer, Marker, Popup, useMap } from 'react-leaflet';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
-import { listingApi, profileApi } from '../../api/services';
+import { listingApi, profileApi, aiApi } from '../../api/services';
 import { getErrorMessage } from '../../utils/constants';
 import ReviewSection from '../../components/ReviewSection';
 import { useCart } from '../../context/CartContext';
@@ -42,6 +42,8 @@ export default function FindGrowersPage() {
   const [results, setResults] = useState([]);
   const [selectedGrower, setSelectedGrower] = useState(null);
   const [searching, setSearching] = useState(false);
+  const [aiQuery, setAiQuery] = useState('');
+  const [aiSearching, setAiSearching] = useState(false);
 
   useEffect(() => {
     Promise.all([listingApi.getMeta(), listingApi.getCities()])
@@ -89,12 +91,94 @@ export default function FindGrowersPage() {
     }
   };
 
+  const handleAiSearch = async (e) => {
+    e.preventDefault();
+    if (!aiQuery.trim()) return;
+    setAiSearching(true);
+    try {
+      const { data } = await aiApi.parseSearch(aiQuery);
+      const parsed = data.data;
+
+      const newFilters = { ...filters };
+      let filtersUpdated = false;
+
+      if (parsed.category) {
+        newFilters.category = parsed.category;
+        filtersUpdated = true;
+      }
+      if (parsed.item) {
+        const cat = parsed.category || filters.category;
+        const availableItems = meta.categoryItems[cat] || [];
+        if (availableItems.includes(parsed.item)) {
+          newFilters.item = parsed.item;
+          filtersUpdated = true;
+        } else if (availableItems.length > 0) {
+          newFilters.item = availableItems[0];
+          filtersUpdated = true;
+        }
+      }
+      if (parsed.city) {
+        newFilters.city = parsed.city;
+        filtersUpdated = true;
+      }
+
+      if (filtersUpdated) {
+        setFilters(newFilters);
+        toast.success(
+          `AI Autoselected: ${[parsed.item, parsed.city]
+            .filter(Boolean)
+            .join(' in ')}`
+        );
+
+        // Run search directly
+        setSearching(true);
+        const searchRes = await listingApi.search(newFilters);
+        setResults(searchRes.data.data.listings);
+        if (searchRes.data.data.listings.length === 0) {
+          toast('No growers found for these filters');
+        }
+      } else {
+        toast.error('Could not extract search filters. Please try another query.');
+      }
+    } catch (err) {
+      toast.error(getErrorMessage(err));
+    } finally {
+      setAiSearching(false);
+    }
+  };
+
   return (
     <div className="mx-auto max-w-6xl px-4 py-12">
       <h1 className="text-2xl font-bold">Find Growers</h1>
-      <p className="mt-1 text-gray-600 text-sm">Search by category, product, and city.</p>
+      <p className="mt-1 text-gray-600 dark:text-slate-400 text-sm">Search by category, product, and city.</p>
 
-      <form onSubmit={handleSearch} className="card mt-8 grid gap-4 sm:grid-cols-3">
+      {/* AI Semantic Search Input */}
+      <div className="card mt-8 bg-gradient-to-r from-primary-50/50 to-emerald-50/30 dark:from-slate-900 dark:to-slate-900/50 border border-primary-100 dark:border-slate-800">
+        <h3 className="text-sm font-bold text-primary-800 dark:text-primary-400 flex items-center gap-1.5 mb-3">
+          ✨ AI Smart Search
+        </h3>
+        <form onSubmit={handleAiSearch} className="flex gap-2">
+          <input
+            type="text"
+            className="input-field py-2.5"
+            placeholder="Type your query (e.g., 'I want potatoes in Amritsar' or 'any dairy products in Bathinda')..."
+            value={aiQuery}
+            onChange={(e) => setAiQuery(e.target.value)}
+          />
+          <button
+            type="submit"
+            disabled={aiSearching || !aiQuery.trim()}
+            className="btn-primary py-2.5 px-6 font-bold text-xs"
+          >
+            {aiSearching ? 'Parsing...' : 'Search'}
+          </button>
+        </form>
+        <p className="text-[10px] text-slate-400 dark:text-slate-500 mt-2 font-medium">
+          Note: This will automatically parse your search query and autofill the category, product, and city filters below.
+        </p>
+      </div>
+
+      <form onSubmit={handleSearch} className="card mt-6 grid gap-4 sm:grid-cols-3">
         <div>
           <label className="block text-sm font-medium mb-1">Category</label>
           <select
