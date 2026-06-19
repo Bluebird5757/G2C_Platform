@@ -26,7 +26,9 @@ export const uploadGrowerAvatar = asyncHandler(async (req, res) => {
   if (!req.file) {
     throw new ApiError(400, 'Image file is required');
   }
-  const filename = req.file.path || req.file.filename;
+  const filename = (req.file.path && (req.file.path.startsWith('http://') || req.file.path.startsWith('https://'))) 
+    ? req.file.path 
+    : req.file.filename;
   const profile = await profileService.updateGrowerAvatar(req.user._id, filename);
   sendSuccess(res, {
     profile: {
