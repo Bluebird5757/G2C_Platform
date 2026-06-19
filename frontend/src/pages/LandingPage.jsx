@@ -48,13 +48,13 @@ export default function LandingPage() {
               step: '02',
               title: 'List or Search',
               desc: 'Growers list available crops; consumers filter easily by city, category, or specific item.',
-              color: 'bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-400',
+              color: 'bg-primary-50 dark:bg-primary-950/40 text-primary-700 dark:text-primary-400',
             },
             {
               step: '03',
               title: 'Connect Direct',
               desc: 'View grower details and contact info. Deal direct, pay fairly, eat fresh.',
-              color: 'bg-teal-50 dark:bg-teal-950/40 text-teal-700 dark:text-teal-400',
+              color: 'bg-primary-50 dark:bg-primary-950/40 text-primary-700 dark:text-primary-400',
             },
           ].map((item) => (
             <div key={item.step} className="card group relative flex flex-col items-center text-center p-8 hover:-translate-y-1">
