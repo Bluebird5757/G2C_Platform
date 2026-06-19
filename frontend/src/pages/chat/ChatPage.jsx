@@ -139,7 +139,7 @@ export default function ChatPage() {
   useEffect(() => {
     if (messages.length > 0 && user?.role === 'grower') {
       const lastMsg = messages[messages.length - 1];
-      const isOtherUser = lastMsg.senderId === activeChat?.userId;
+      const isOtherUser = lastMsg.senderId?.toString() === activeChat?.userId?.toString();
       if (isOtherUser) {
         setLoadingSuggestions(true);
         aiApi

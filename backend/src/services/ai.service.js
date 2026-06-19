@@ -115,20 +115,76 @@ Text: "${text}"`;
     }
   }
 
-  // Local static/mock translation fallback
+  // Local static/mock translation fallback dictionary
   const norm = text.toLowerCase().trim();
+  const cleanText = text.replace(/[.,\/#!$%\^&\*;:{}=\-_`~()?]/g,"").trim().toLowerCase();
+
+  const punjabiPhrases = {
+    'hello': 'ਸਤਿ ਸ੍ਰੀ ਅਕਾਲ',
+    'hi': 'ਸਤਿ ਸ੍ਰੀ ਅਕਾਲ',
+    'yes': 'ਹਾਂ',
+    'no': 'ਨਹੀਂ',
+    'ok': 'ਠੀਕ ਹੈ',
+    'okay': 'ਠੀਕ ਹੈ',
+    'yes, fresh onions are available.': 'ਹਾਂ, ਤਾਜ਼ਾ ਪਿਆਜ਼ ਉਪਲਬਧ ਹਨ।',
+    'no, we are currently sold out.': 'ਨਹੀਂ, ਸਾਡੇ ਕੋਲ ਹੁਣੇ ਖਤਮ ਹੋ ਗਿਆ ਹੈ।',
+    'how much is the price for onion?': 'ਪਿਆਜ਼ ਦੀ ਕੀਮਤ ਕਿੰਨੀ ਹੈ?',
+    'how much quantity do you require?': 'ਤੁਹਾਨੂੰ ਕਿੰਨੀ ਮਾਤਰਾ ਦੀ ਲੋੜ ਹੈ?',
+    'prices are displayed on my listing page.': 'ਕੀਮਤਾਂ ਮੇਰੀ ਸੂਚੀ ਪੰਨੇ ਤੇ ਦਿਖਾਈਆਂ ਗਈਆਂ ਹਨ।'
+  };
+
+  const hindiPhrases = {
+    'hello': 'नमस्ते',
+    'hi': 'नमस्ते',
+    'yes': 'हाँ',
+    'no': 'नहीं',
+    'ok': 'ठीक है',
+    'okay': 'ठीक है',
+    'yes, fresh onions are available.': 'हाँ, ताज़ा प्याज उपलब्ध हैं।',
+    'no, we are currently sold out.': 'नहीं, अभी हमारे पास समाप्त हो गया है।',
+    'how much is the price for onion?': 'प्याज का मूल्य कितना है?',
+    'how much quantity do you require?': 'आपको कितनी मात्रा की आवश्यकता है?',
+    'prices are displayed on my listing page.': 'मूल्य मेरी सूची पृष्ठ पर प्रदर्शित हैं।'
+  };
+
   if (targetLang.toLowerCase() === 'punjabi') {
-    if (norm === 'hello' || norm === 'hi') return 'ਸਤਿ ਸ੍ਰੀ ਅਕਾਲ';
-    if (norm.includes('price') || norm.includes('how much')) return 'ਇਸਦੀ ਕੀਮਤ ਕੀ ਹੈ?';
-    if (norm.includes('available')) return 'ਕੀ ਇਹ ਉਪਲਬਧ ਹੈ?';
-    return `[ਪੰਜਾਬੀ ਅਨੁਵਾਦ]: ${text}`;
+    // Check exact phrase first
+    if (punjabiPhrases[norm]) return punjabiPhrases[norm];
+    if (punjabiPhrases[cleanText]) return punjabiPhrases[cleanText];
+
+    // Word by word fallback
+    const words = text.split(/\s+/);
+    const punjabiWords = {
+      'hello': 'ਸਤਿ ਸ੍ਰੀ ਅਕਾਲ', 'hi': 'ਸਤਿ ਸ੍ਰੀ ਅਕਾਲ', 'yes': 'ਹਾਂ', 'no': 'ਨਹੀਂ', 'ok': 'ਠੀਕ ਹੈ', 'okay': 'ਠੀਕ ਹੈ',
+      'available': 'ਉਪਲਬਧ', 'price': 'ਕੀਮਤ', 'cost': 'ਕੀਮਤ', 'onion': 'ਪਿਆਜ਼', 'onions': 'ਪਿਆਜ਼',
+      'potato': 'ਆਲੂ', 'potatoes': 'ਆਲੂ', 'tomato': 'ਟਮਾਟਰ', 'tomatoes': 'ਟਮਾਟਰ', 'milk': 'ਦੁੱਧ',
+      'paneer': 'ਪਨੀਰ', 'fresh': 'ਤਾਜ਼ਾ', 'quantity': 'ਮਾਤਰਾ', 'is': 'ਹੈ', 'are': 'ਹਨ'
+    };
+    const translated = words.map(w => {
+      const cleanW = w.toLowerCase().replace(/[^a-z]/g, '');
+      return punjabiWords[cleanW] || w;
+    }).join(' ');
+    return translated;
   }
 
   if (targetLang.toLowerCase() === 'hindi') {
-    if (norm === 'hello' || norm === 'hi') return 'नमस्ते';
-    if (norm.includes('price') || norm.includes('how much')) return 'इसका मूल्य क्या है?';
-    if (norm.includes('available')) return 'क्या यह उपलब्ध है?';
-    return `[हिंदी अनुवाद]: ${text}`;
+    // Check exact phrase first
+    if (hindiPhrases[norm]) return hindiPhrases[norm];
+    if (hindiPhrases[cleanText]) return hindiPhrases[cleanText];
+
+    // Word by word fallback
+    const words = text.split(/\s+/);
+    const hindiWords = {
+      'hello': 'नमस्ते', 'hi': 'नमस्ते', 'yes': 'हाँ', 'no': 'नहीं', 'ok': 'ठीक है', 'okay': 'ठीक है',
+      'available': 'उपलब्ध', 'price': 'मूल्य', 'cost': 'मूल्य', 'onion': 'प्याज', 'onions': 'प्याज',
+      'potato': 'आलू', 'potatoes': 'आलू', 'tomato': 'टमाटर', 'tomatoes': 'टमाटर', 'milk': 'दूध',
+      'paneer': 'पनीर', 'fresh': 'ताज़ा', 'quantity': 'मात्रा', 'is': 'है', 'are': 'हैं'
+    };
+    const translated = words.map(w => {
+      const cleanW = w.toLowerCase().replace(/[^a-z]/g, '');
+      return hindiWords[cleanW] || w;
+    }).join(' ');
+    return translated;
   }
 
   return text;

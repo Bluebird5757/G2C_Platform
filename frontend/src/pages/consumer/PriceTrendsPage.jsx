@@ -87,10 +87,10 @@ export default function PriceTrendsPage() {
     <div className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
       <div className="md:flex md:items-center md:justify-between">
         <div className="min-w-0 flex-1">
-          <h1 className="text-3xl font-extrabold text-slate-900 tracking-tight flex items-center gap-2">
+          <h1 className="text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight flex items-center gap-2">
             Market Price Trends 📈
           </h1>
-          <p className="mt-2 text-sm text-slate-500">
+          <p className="mt-2 text-sm text-slate-500 dark:text-slate-400">
             Compare historical crop and dairy product prices across Punjab cities.
           </p>
         </div>
@@ -99,16 +99,16 @@ export default function PriceTrendsPage() {
       {trends.length === 0 ? (
         <div className="mt-12 card text-center py-16">
           <span className="text-5xl">📊</span>
-          <p className="mt-4 text-base font-bold text-slate-800">No order history available</p>
-          <p className="text-sm text-slate-500 mt-1">Trends will populate once orders are placed.</p>
+          <p className="mt-4 text-base font-bold text-slate-800 dark:text-white">No order history available</p>
+          <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">Trends will populate once orders are placed.</p>
         </div>
       ) : (
         <div className="mt-8 grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Main Chart Area */}
-          <div className="lg:col-span-2 card bg-white p-6 relative">
+          <div className="lg:col-span-2 card p-6 relative">
             <div className="flex justify-between items-center mb-6">
-              <h2 className="text-lg font-bold text-slate-800 capitalize">
-                Price Chart: <span className="text-primary-600 font-extrabold">{selectedItem}</span>
+              <h2 className="text-lg font-bold text-slate-800 dark:text-white capitalize">
+                Price Chart: <span className="text-primary-600 dark:text-primary-400 font-extrabold">{selectedItem}</span>
               </h2>
 
               {/* Crop Selector */}
@@ -116,7 +116,7 @@ export default function PriceTrendsPage() {
                 <select
                   value={selectedItem}
                   onChange={(e) => setSelectedItem(e.target.value)}
-                  className="input-field py-1.5 px-3 text-sm capitalize font-semibold text-slate-700 bg-slate-50 hover:bg-slate-100/70 cursor-pointer border-slate-200"
+                  className="input-field py-1.5 px-3 text-sm capitalize font-semibold cursor-pointer w-auto h-auto"
                 >
                   {allItems.map((item) => (
                     <option key={item} value={item} className="capitalize">
@@ -128,7 +128,7 @@ export default function PriceTrendsPage() {
             </div>
 
             {/* City Legends */}
-            <div className="flex flex-wrap gap-4 mb-4 text-xs font-bold text-slate-600">
+            <div className="flex flex-wrap gap-4 mb-4 text-xs font-bold text-slate-600 dark:text-slate-300">
               {cities.map((city) => {
                 const colors = getColorsForCity(city);
                 return (
@@ -141,7 +141,7 @@ export default function PriceTrendsPage() {
             </div>
 
             {/* SVG Interactive Line Chart */}
-            <div className="relative w-full aspect-[7/3] bg-slate-50/50 border border-slate-100 rounded-xl overflow-hidden shadow-inner p-2">
+            <div className="relative w-full aspect-[7/3] bg-slate-50/50 dark:bg-slate-950/40 border border-slate-100 dark:border-slate-800/80 rounded-xl overflow-hidden shadow-inner p-2">
               <svg viewBox={`0 0 ${chartWidth} ${chartHeight}`} className="w-full h-full">
                 {/* Grid Lines */}
                 {[0, 0.25, 0.5, 0.75, 1].map((ratio) => {
@@ -154,7 +154,8 @@ export default function PriceTrendsPage() {
                         y1={coords.y}
                         x2={chartWidth - paddingX}
                         y2={coords.y}
-                        stroke="#e2e8f0"
+                        stroke="currentColor"
+                        className="stroke-slate-200 dark:stroke-slate-800/80"
                         strokeDasharray="4 4"
                         strokeWidth="1"
                       />
@@ -162,7 +163,7 @@ export default function PriceTrendsPage() {
                         x={paddingX - 10}
                         y={coords.y + 4}
                         textAnchor="end"
-                        className="text-[10px] font-bold fill-slate-400"
+                        className="text-[10px] font-bold fill-slate-400 dark:fill-slate-500"
                       >
                         ₹{Math.round(yVal)}
                       </text>
@@ -183,7 +184,7 @@ export default function PriceTrendsPage() {
                       x={coords.x}
                       y={chartHeight - paddingY + 20}
                       textAnchor="middle"
-                      className="text-[10px] font-bold fill-slate-400"
+                      className="text-[10px] font-bold fill-slate-400 dark:fill-slate-500"
                     >
                       {formattedDate}
                     </text>
@@ -279,8 +280,8 @@ export default function PriceTrendsPage() {
           </div>
 
           {/* Price Metrics Comparative Table */}
-          <div className="card bg-white p-6 h-fit">
-            <h3 className="text-lg font-bold text-slate-800 mb-5">
+          <div className="card p-6 h-fit">
+            <h3 className="text-lg font-bold text-slate-800 dark:text-white mb-5">
               Market Summary
             </h3>
             <div className="space-y-4">
@@ -300,24 +301,24 @@ export default function PriceTrendsPage() {
                 return (
                   <div
                     key={city}
-                    className="p-4 rounded-xl border border-slate-100 bg-slate-50/50 shadow-inner"
+                    className="p-4 rounded-xl border border-slate-100 dark:border-slate-800/50 bg-slate-50/50 dark:bg-slate-950/20 shadow-inner"
                   >
                     <div className="flex justify-between items-center">
                       <div className="flex items-center gap-2">
                         <span className={`h-3 w-3 rounded-full ${colors.bg}`} />
-                        <span className="font-bold text-slate-800 text-sm">{city}</span>
+                        <span className="font-bold text-slate-800 dark:text-white text-sm">{city}</span>
                       </div>
-                      <span className="font-extrabold text-slate-900 text-base">
+                      <span className="font-extrabold text-slate-900 dark:text-white text-base">
                         ₹{currentPrice.toFixed(1)}
                       </span>
                     </div>
 
-                    <div className="grid grid-cols-2 gap-2 mt-3 pt-3 border-t border-slate-200/50 text-[11px] font-bold text-slate-500">
+                    <div className="grid grid-cols-2 gap-2 mt-3 pt-3 border-t border-slate-200/50 dark:border-slate-800/50 text-[11px] font-bold text-slate-500 dark:text-slate-400">
                       <div>
-                        Low: <span className="text-slate-800 font-medium">₹{minVal}</span>
+                        Low: <span className="text-slate-800 dark:text-slate-200 font-medium">₹{minVal}</span>
                       </div>
                       <div className="text-right">
-                        High: <span className="text-slate-800 font-medium">₹{maxVal}</span>
+                        High: <span className="text-slate-800 dark:text-slate-200 font-medium">₹{maxVal}</span>
                       </div>
                       <div className="col-span-2 mt-1">
                         Trend:{' '}
@@ -330,7 +331,7 @@ export default function PriceTrendsPage() {
                             ▼ {change.toFixed(1)}% (decreasing)
                           </span>
                         ) : (
-                          <span className="text-slate-500">
+                          <span className="text-slate-500 dark:text-slate-400">
                             ▬ stable
                           </span>
                         )}
