@@ -3,8 +3,10 @@ import toast from 'react-hot-toast';
 import { listingApi, profileApi } from '../../api/services';
 import { getErrorMessage } from '../../utils/constants';
 import ReviewSection from '../../components/ReviewSection';
+import { useCart } from '../../context/CartContext';
 
 export default function FindGrowersPage() {
+  const { addToCart } = useCart();
   const [meta, setMeta] = useState({ categories: [], categoryItems: {} });
   const [cities, setCities] = useState([]);
   const [filters, setFilters] = useState({ category: '', item: '', city: '' });
@@ -46,7 +48,13 @@ export default function FindGrowersPage() {
   const viewGrower = async (growerId) => {
     try {
       const { data } = await profileApi.getPublicGrower(growerId);
-      setSelectedGrower(data.data.profile);
+      const growerListing = results.find(
+        (r) => (r.growerId._id || r.growerId) === growerId
+      );
+      setSelectedGrower({
+        ...data.data.profile,
+        items: growerListing ? growerListing.items : [],
+      });
     } catch (err) {
       toast.error(getErrorMessage(err));
     }
@@ -126,6 +134,34 @@ export default function FindGrowersPage() {
               <div className="flex justify-between border-b border-slate-100/50 pb-1.5"><dt className="font-semibold text-slate-500">Phone</dt><dd className="text-slate-800 font-medium">{selectedGrower.phone || '—'}</dd></div>
               <div className="flex justify-between pb-0.5"><dt className="font-semibold text-slate-500">Address</dt><dd className="text-slate-800 font-medium text-right max-w-[200px] truncate">{selectedGrower.address || '—'}</dd></div>
             </dl>
+
+            {/* Available Products Section */}
+            {selectedGrower.items && selectedGrower.items.length > 0 && (
+              <div className="mt-4 border-t border-slate-100 pt-4 text-left">
+                <h3 className="text-sm font-bold text-slate-800 mb-2">Available Products</h3>
+                <div className="flex flex-wrap gap-2">
+                  {selectedGrower.items.map((item) => (
+                    <button
+                      type="button"
+                      key={item}
+                      onClick={() =>
+                        addToCart(
+                          selectedGrower.userId._id || selectedGrower.userId,
+                          selectedGrower.name,
+                          item
+                        )
+                      }
+                      className="flex items-center gap-1.5 px-3 py-1.5 bg-primary-50 text-primary-700 hover:bg-primary-100 rounded-full text-xs font-semibold transition-colors focus:outline-none"
+                    >
+                      <span className="capitalize">{item}</span>
+                      <span className="text-[10px] bg-primary-600 text-white rounded-full h-4 w-4 flex items-center justify-center font-bold">
+                        +
+                      </span>
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
 
             <ReviewSection 
               growerId={selectedGrower.userId._id || selectedGrower.userId} 

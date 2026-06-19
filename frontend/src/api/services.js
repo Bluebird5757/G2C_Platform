@@ -23,6 +23,13 @@ export const reviewApi = {
   get: (growerId) => api.get(`/growers/${growerId}/reviews`),
 };
 
+export const orderApi = {
+  create: (data) => api.post('/orders', data),
+  getConsumer: () => api.get('/orders/consumer'),
+  getGrower: () => api.get('/orders/grower'),
+  updateStatus: (orderId, status) => api.patch(`/orders/${orderId}/status`, { status }),
+};
+
 export const listingApi = {
   getMeta: () => api.get('/listings/meta'),
   getCities: () => api.get('/listings/cities'),

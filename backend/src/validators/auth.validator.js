@@ -57,3 +57,11 @@ export const reviewValidator = [
     .optional()
     .trim(),
 ];
+
+export const orderValidator = [
+  body('growerId').isMongoId().withMessage('Valid growerId is required'),
+  body('items').isArray({ min: 1 }).withMessage('Order items must be a non-empty array'),
+  body('items.*.name').trim().notEmpty().withMessage('Item name is required'),
+  body('items.*.quantity').isInt({ min: 1 }).withMessage('Quantity must be an integer >= 1'),
+  body('items.*.price').optional().isFloat({ min: 0 }).withMessage('Price must be a number >= 0'),
+];
