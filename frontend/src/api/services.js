@@ -1,0 +1,29 @@
+import api from './client';
+
+export const authApi = {
+  register: (data) => api.post('/auth/register', data),
+  login: (data) => api.post('/auth/login', data),
+  me: () => api.get('/auth/me'),
+};
+
+export const profileApi = {
+  getGrowerProfile: () => api.get('/growers/profile'),
+  updateGrowerProfile: (data) => api.put('/growers/profile', data),
+  uploadGrowerAvatar: (formData) =>
+    api.post('/growers/profile/avatar', formData, {
+      headers: { 'Content-Type': 'multipart/form-data' },
+    }),
+  getConsumerProfile: () => api.get('/consumers/profile'),
+  updateConsumerProfile: (data) => api.put('/consumers/profile', data),
+  getPublicGrower: (userId) => api.get(`/growers/public/${userId}`),
+};
+
+export const listingApi = {
+  getMeta: () => api.get('/listings/meta'),
+  getCities: () => api.get('/listings/cities'),
+  search: (data) => api.post('/listings/search', data),
+  create: (data) => api.post('/listings', data),
+  getMine: () => api.get('/listings/mine'),
+  delete: (id) => api.delete(`/listings/${id}`),
+  removeItem: (id, item) => api.patch(`/listings/${id}/items`, { item }),
+};
