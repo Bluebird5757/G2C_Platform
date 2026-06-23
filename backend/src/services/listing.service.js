@@ -73,10 +73,7 @@ export const searchGrowers = async ({ category, item, city }) => {
     query.city = city;
   }
 
-  const listings = await Listing.find(query).populate({
-    path: 'growerId',
-    select: 'email',
-  });
+  const listings = await Listing.find(query);
 
   const growerIds = listings.map((l) => l.growerId._id || l.growerId);
   const profiles = await GrowerProfile.find({ userId: { $in: growerIds } });
