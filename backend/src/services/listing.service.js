@@ -14,12 +14,26 @@ export const createListing = async (growerId, { category, items }) => {
     throw new ApiError(400, 'Invalid category');
   }
 
-  const listing = await Listing.create({
-    growerId,
-    category,
-    items: items.map((i) => i.toLowerCase().trim()),
-    city: profile.city,
-  });
+  const formattedItems = items.map((i) => i.toLowerCase().trim());
+
+  // Check if an active listing for this grower and category already exists
+  let listing = await Listing.findOne({ growerId, category, isActive: true });
+
+  if (listing) {
+    // Add only new items to the existing items array (avoid duplicates)
+    const existingItemsSet = new Set(listing.items);
+    formattedItems.forEach((item) => existingItemsSet.add(item));
+    listing.items = Array.from(existingItemsSet);
+    await listing.save();
+  } else {
+    // Create new listing
+    listing = await Listing.create({
+      growerId,
+      category,
+      items: formattedItems,
+      city: profile.city,
+    });
+  }
 
   return listing;
 };
