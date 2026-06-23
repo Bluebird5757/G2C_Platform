@@ -37,6 +37,8 @@ export const consumerProfileValidator = [
   body('city').trim().notEmpty().withMessage('City is required'),
   body('phone').optional().trim(),
   body('address').optional().trim(),
+  body('latitude').optional().isFloat({ min: -90, max: 90 }).withMessage('Latitude must be between -90 and 90'),
+  body('longitude').optional().isFloat({ min: -180, max: 180 }).withMessage('Longitude must be between -180 and 180'),
 ];
 
 export const listingValidator = [
@@ -48,7 +50,7 @@ export const listingValidator = [
 export const searchValidator = [
   body('category').trim().notEmpty().withMessage('Category is required'),
   body('item').trim().notEmpty().withMessage('Item is required'),
-  body('city').trim().notEmpty().withMessage('City is required'),
+  body('city').optional().trim(),
 ];
 
 export const reviewValidator = [

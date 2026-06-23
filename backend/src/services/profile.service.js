@@ -68,6 +68,8 @@ export const updateConsumerProfile = async (userId, data) => {
       city: data.city,
       phone: data.phone || '',
       address: data.address || '',
+      latitude: data.latitude !== undefined ? Number(data.latitude) : 0,
+      longitude: data.longitude !== undefined ? Number(data.longitude) : 0,
       isProfileComplete: true,
     },
     { new: true, runValidators: true }

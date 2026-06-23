@@ -62,12 +62,18 @@ export const getDistinctCities = async () => {
 };
 
 export const searchGrowers = async ({ category, item, city }) => {
-  const listings = await Listing.find({
+  const query = {
     isActive: true,
     category,
-    city,
     items: item.toLowerCase(),
-  }).populate({
+  };
+
+  // Only filter by city if provided (proximity mode skips city)
+  if (city && city.trim()) {
+    query.city = city;
+  }
+
+  const listings = await Listing.find(query).populate({
     path: 'growerId',
     select: 'email',
   });
